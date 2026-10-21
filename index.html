@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Off Syllabus</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
+    <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" />
+    <script src="lessons.js"></script>
+    <link rel="stylesheet" href="style.css"/>
+</head>
+
+<body>
+    <div id="app">
+        <header>
+            <h1 v-text="sitename"></h1>
+            <button class="menu-button" aria-label="Menu">
+                <span class="fa-solid fa-bars"></span>
+            </button>
+            <h1 v-text="sitename"></h1>
+            <button class="cart-button" v-on:click="showCheckout">
+                <span class="fa-solid fa-cart-shopping"></span>
+                <span class="cart-count">{{cartItemCount}}</span>
+            </button>
+            
+        </header>
+
+        <main>
+        </main> 
+</body>
+</html>
