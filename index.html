@@ -45,6 +45,28 @@
                     <p><strong>Schedule:</strong> {{product.schedule}}</p>
                     <p><strong>Location:</strong> {{product.location}}</p>
                     <p><strong>Available Seats:</strong> {{product.availableInventory}}</p>
+
+                    
+                    <button v-on:click="addItem(product)"
+                            v-if="canAddToCart(product)">
+                        Add to Cart
+                    </button>
+
+                    <span v-if="product.availableInventory === 0">
+                        All Out!
+                    </span>
+
+                    <span v-else-if="product.availableInventory < 5">
+                        Only {{product.availableInventory}} left!
+                    </span>
+
+                    <span v-else>Buy Now!</span>
+
+                    <button disabled="disabled"
+                            v-if="!canAddToCart(product)">
+                        Add to Cart
+                    </button>   
+
                 </div>
             </div>
 
@@ -56,7 +78,21 @@
             el: '#app',
             data: {
                 sitename: 'Off Syllabus',
-                products: lessons
+                products: lessons,
+                cart: [],
+                showProduct: true,
+            },
+            methods: {
+                addItem: function(product) {
+                if (product.availableInventory > 0) {
+                    this.cart.push(product.id);
+                    product.availableInventory--;
+                    }
+                },
+
+                canAddToCart: function(product) {
+                    return product.availableInventory > 0;
+                }
             }
         });
     </script>
