@@ -72,164 +72,199 @@
             </div>
         </div>
             
-            <div v-else class="checkout-container">
-                <div class="checkout-box" v-if="!reviewStep">
-                    <h2>Checkout</h2>
-                    <p>Enter your details below to continue.</p>
+        <div v-else class="checkout-container">
+            <div class="checkout-box" v-if="!reviewStep">
+                <h2>Checkout</h2>
+                <p>Enter your details below to continue.</p>
+                <p>
+                    <strong>First Name:</strong>
+                    <input v-model.trim="order.firstName">
+                </p>
+                <p>
+                    <strong>Last Name:</strong>
+                    <input v-model.trim="order.lastName">
+                </p>
+                <p>
+                    <strong>Address:</strong>
+                    <input v-model="order.address">
+                </p>
+                <p>
+                    <strong>City:</strong>
+                    <input v-model="order.city">
+                </p>
+                <p>
+                    <strong>State:</strong>
+                    <select v-model="order.state">
+                        <option disabled value="">Select a State</option>
+                        <option v-for="(state, key) in states"
+                                v-bind:key="key"
+                                v-bind:value="state">
+                            {{state}}
+                        </option>
+                    </select>
+                </p>
+                <p>
+                    <strong>Zip / Postal Code:</strong>
+                    <input v-model.number="order.zip">
+                </p>
+                <p>
+                    <input type="checkbox" id="gift"
+                        v-model="order.gift"
+                        v-bind:true-value="order.sendGift"
+                        v-bind:false-value="order.dontSendGift">
+                    <label for="gift">Ship as a Gift?</label>
+                </p>
 
-                    <p>
-                        <strong>First Name:</strong>
-                        <input v-model.trim="order.firstName">
-                    </p>
+                <p><strong>Shipping Method:</strong></p>
 
-                    <p>
-                        <strong>Last Name:</strong>
-                        <input v-model.trim="order.lastName">
-                    </p>
+                <p>
+                    <input type="radio" id="home"
+                        value="Home" v-model="order.method">
+                    <label for="home">Home</label>
 
-                    <p>
-                        <strong>Address:</strong>
-                        <input v-model="order.address">
-                    </p>
+                    <input type="radio" id="business"
+                        value="Work" v-model="order.method">
+                    <label for="business">Business</label>
+                </p>
 
-                    <p>
-                        <strong>City:</strong>
-                        <input v-model="order.city">
-                    </p>
-
-                    <p>
-                        <strong>State:</strong>
-                        <select v-model="order.state">
-                            <option disabled value="">Select a State</option>
-                            <option v-for="(state, key) in states"
-                                    v-bind:key="key"
-                                    v-bind:value="state">
-                                {{state}}
-                            </option>
-                        </select>
-                    </p>
-
-                    <p>
-                        <strong>Zip / Postal Code:</strong>
-                        <input v-model.number="order.zip">
-                    </p>
-
-                    <p>
-                        <input type="checkbox" id="gift"
-                            v-model="order.gift"
-                            v-bind:true-value="order.sendGift"
-                            v-bind:false-value="order.dontSendGift">
-                        <label for="gift">Ship as a Gift?</label>
-                    </p>
-
-                    <p><strong>Shipping Method:</strong></p>
-
-                    <p>
-                        <input type="radio" id="home"
-                            value="Home" v-model="order.method">
-                        <label for="home">Home</label>
-
-                        <input type="radio" id="business"
-                            value="Work" v-model="order.method">
-                        <label for="business">Business</label>
-                    </p>
-
-                    <button v-on:click="goToReview">Next</button>
-                    <button v-on:click="showCheckout">Continue Shopping</button>
-                </div>
+                <button v-on:click="goToReview">Next</button>
+                <button v-on:click="showCheckout">Continue Shopping</button>
             </div>
+            
+            <div class="checkout-box" v-else>
+                <h2>Review Your Information</h2>
+                <p>Please check your details before placing your order.</p>
 
-
+                <div class="review-details">
+                    <p><strong>First Name:</strong> {{order.firstName}}</p>
+                    <p><strong>Last Name:</strong> {{order.lastName}}</p>
+                    <p><strong>Address:</strong> {{order.address}}</p>
+                    <p><strong>City:</strong> {{order.city}}</p>
+                    <p><strong>State:</strong> {{order.state}}</p>
+                    <p><strong>Zip / Postal Code:</strong> {{order.zip}}</p>
+                    <p><strong>Gift:</strong> {{order.gift}}</p>
+                    <p><strong>Shipping Method:</strong> {{order.method}}</p>
+                </div>
+                <h3>Your Lessons</h3>
+                <div v-for="product in products" v-bind:key="product.id">
+                    <p v-if="cartCount(product.id) > 0">
+                        {{product.title}} x {{cartCount(product.id)}}
+                        - AED {{product.price * cartCount(product.id)}}
+                    </p>
+                </div>
+                <h3>Total: AED {{cartTotal}}</h3>
+                <button v-on:click="reviewStep = false">
+                    Back to Edit
+                </button>
+                <button v-on:click="submitForm">
+                    Place Order
+                </button>
+            </div>
+        </div>
         </main>
-    </div>
+        </div>
 
-    <script>
-        let webstore = new Vue({
-            el: '#app',
-            data: {
-                sitename: 'Off Syllabus',
-                products: lessons,
-                cart: [],
-                showProduct: true,
-                reviewStep: false,
-                states: {
-                    "AbuDhabi": "Abu Dhabi",
-                    "Dubai": "Dubai",
-                    "Sharjah": "Sharjah",
-                    "Ajman": "Ajman",
-                    "UmmAlQuwain": "Umm Al Quwain",
-                    "RasAlKhaimah": "Ras Al Khaimah"
-                },
-                order: {
-                    firstName: "",
-                    lastName: "",
-                    address: "",
-                    city: "",
-                    zip: "",
-                    state: "",
-                    method: "Home",
-                    gift: "Do not send as a Gift",
-                    sendGift: "Send as a Gift",
-                    dontSendGift: "Do not send as a Gift"
-                }
-
-            },
-            methods: {
-                addItem: function(product) {
-                if (product.availableInventory > 0) {
-                    this.cart.push(product.id);
-                    product.availableInventory--;
+        <script>
+            let webstore = new Vue({
+                el: '#app',
+                data: {
+                    sitename: 'Off Syllabus',
+                    products: lessons,
+                    cart: [],
+                    showProduct: true,
+                    reviewStep: false,
+                    states: {
+                        "AbuDhabi": "Abu Dhabi",
+                        "Dubai": "Dubai",
+                        "Sharjah": "Sharjah",
+                        "Ajman": "Ajman",
+                        "UmmAlQuwain": "Umm Al Quwain",
+                        "RasAlKhaimah": "Ras Al Khaimah"
+                    },
+                    order: {
+                        firstName: "",
+                        lastName: "",
+                        address: "",
+                        city: "",
+                        zip: "",
+                        state: "",
+                        method: "Home",
+                        gift: "Do not send as a Gift",
+                        sendGift: "Send as a Gift",
+                        dontSendGift: "Do not send as a Gift"
                     }
+
                 },
+                methods: {
+                    addItem: function(product) {
+                    if (product.availableInventory > 0) {
+                        this.cart.push(product.id);
+                        product.availableInventory--;
+                        }
+                    },
 
-                canAddToCart: function(product) {
-                    return product.availableInventory > 0;
+                    canAddToCart: function(product) {
+                        return product.availableInventory > 0;
+                    },
+
+                    showCheckout: function() {
+                        this.showProduct = !this.showProduct;
+                        this.reviewStep = false;
+                    },
+                    goToReview: function() {
+                    if (this.cart.length === 0) {
+                        alert("Please add a lesson to your cart first!");
+                        return;
+                    }
+
+                    if (!this.order.firstName ||
+                        !this.order.lastName ||
+                        !this.order.address ||
+                        !this.order.city ||
+                        !this.order.state ||
+                        !this.order.zip) {
+                        alert("Please complete all your details!");
+                        return;
+                    }
+
+                    this.reviewStep = true;
                 },
-
-                showCheckout: function() {
-                    this.showProduct = !this.showProduct;
-                    this.reviewStep = false;
-                },
-                goToReview: function() {
-                if (this.cart.length === 0) {
-                    alert("Please add a lesson to your cart first!");
-                    return;
-                }
-
-                if (!this.order.firstName ||
-                    !this.order.lastName ||
-                    !this.order.address ||
-                    !this.order.city ||
-                    !this.order.state ||
-                    !this.order.zip) {
-                    alert("Please complete all your details!");
-                    return;
-                }
-
-                this.reviewStep = true;
-            }
-            },
-            computed: {
-                cartItemCount: function() {
-                    return this.cart.length || "";
-                },
-
-                cartTotal: function() {
-                    let total = 0;
-
+                cartCount: function(id) {
+                    let count = 0;
                     for (let i = 0; i < this.cart.length; i++) {
-                        for (let j = 0; j < this.products.length; j++) {
-                            if (this.cart[i] === this.products[j].id) {
-                                total += this.products[j].price;
-                            }
+                        if (this.cart[i] === id) {
+                            count++;
                         }
                     }
-
-                    return total;
+                    return count;
                 },
-                
-            }
-        });
-    </script>
+                submitForm: function() {
+                    alert("Order Submitted!!");
+                    this.showProduct = true;
+                    this.reviewStep = false;
+                }
+                },
+                computed: {
+                    cartItemCount: function() {
+                        return this.cart.length || "";
+                    },
+
+                    cartTotal: function() {
+                        let total = 0;
+
+                        for (let i = 0; i < this.cart.length; i++) {
+                            for (let j = 0; j < this.products.length; j++) {
+                                if (this.cart[i] === this.products[j].id) {
+                                    total += this.products[j].price;
+                                }
+                            }
+                        }
+
+                        return total;
+                    },
+                    
+                }
+            });
+        </script>
 </body>
 </html>
