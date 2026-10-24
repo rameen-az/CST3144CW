@@ -27,16 +27,29 @@
 
         <main>
 
-        <div v-if="showProduct">    
+        <div v-if="showProduct"> 
+            <div class="sorting">
+                <label for="sort">
+                    <span class="fa-solid fa-arrow-down-wide-short"></span>
+                    Sort Lessons:
+                </label>
+
+                <select id="sort" v-model="sortBy">
+                    <option value="priceLow">Price: Low to High</option>
+                    <option value="priceHigh">Price: High to Low</option>
+                    <option value="name">Name: A to Z</option>
+                    <option value="rating">Rating: Highest First</option>
+                    <option value="availability">Available Seats: Most First</option>
+                </select>
+            </div>
             <div class="lesson-grid">
                 <div class="lesson-card"
-                    v-for="product in products"
+                    v-for="product in sortedProducts"
                     v-bind:key="product.id">
-
                     <figure>
                         <img v-bind:src="product.image" v-bind:alt="product.title">
                     </figure>
-
+                    
                     <h2 v-text="product.title"></h2>
                     <p v-html="product.description"></p>
                     <p><strong>Price:</strong> AED {{product.price}}</p>
@@ -192,7 +205,8 @@
                         gift: "Do not send as a Gift",
                         sendGift: "Send as a Gift",
                         dontSendGift: "Do not send as a Gift"
-                    }
+                    },
+                    sortBy: "priceLow",
 
                 },
                 methods: {
@@ -248,10 +262,8 @@
                     cartItemCount: function() {
                         return this.cart.length || "";
                     },
-
                     cartTotal: function() {
                         let total = 0;
-
                         for (let i = 0; i < this.cart.length; i++) {
                             for (let j = 0; j < this.products.length; j++) {
                                 if (this.cart[i] === this.products[j].id) {
@@ -259,9 +271,39 @@
                                 }
                             }
                         }
-
                         return total;
                     },
+                    sortedProducts: function() {
+                        let productsArray = this.products.slice(0);
+                        let sorting = this.sortBy;
+
+                        function compare(a, b) {
+                            if (sorting === "priceLow") {
+                                return a.price - b.price;
+                            }
+
+                            if (sorting === "priceHigh") {
+                                return b.price - a.price;
+                            }
+
+                            if (sorting === "name") {
+                                return a.title.localeCompare(b.title);
+                            }
+
+                            if (sorting === "rating") {
+                                return b.rating - a.rating;
+                            }
+
+                            if (sorting === "availability") {
+                                return b.availableInventory - a.availableInventory;
+                            }
+
+                            return 0;
+                        }
+
+                        return productsArray.sort(compare);
+                    }
+
                     
                 }
             });
